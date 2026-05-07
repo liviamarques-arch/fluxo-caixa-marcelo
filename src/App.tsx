@@ -63,7 +63,8 @@ const businesses: Business[] = ["Marcenaria", "Construção", "Geral"];
 const initialCategories: Category[] = [];
 const initialClients: ClientProject[] = [];
 const initialTransactions: Transaction[] = [];
-const DEFAULT_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzj7QgLcJ46w9TnzW_9ZzHtCGKrxMRynB9_tFk-OBceILEckdEngEPwbhugsqaw6f5f/exec";
+const DEFAULT_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyM7ivSuztGFBBNE4bwH6dvlP4alyBfB3F0loLCPC6TJtLPmPIoIBePPKSLYdEROPJL/exec"
+;
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
