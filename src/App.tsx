@@ -63,6 +63,7 @@ const businesses: Business[] = ["Marcenaria", "Construção", "Geral"];
 const initialCategories: Category[] = [];
 const initialClients: ClientProject[] = [];
 const initialTransactions: Transaction[] = [];
+const DEFAULT_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzj7QgLcJ46w9TnzW_9ZzHtCGKrxMRynB9_tFk-OBceILEckdEngEPwbhugsqaw6f5f/exec";
 
 function todayISO() {
   return new Date().toISOString().slice(0, 10);
@@ -101,8 +102,7 @@ export default function App() {
   const [clients, setClients] = useState<ClientProject[]>(initialClients);
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
-
+const [, setIsMobile] = useState(window.innerWidth <= 900);
   const [message, setMessage] = useState("");
   const [syncing, setSyncing] = useState(false);
 
@@ -114,10 +114,10 @@ export default function App() {
   const [openCategoryModal, setOpenCategoryModal] = useState(false);
 
   const [googleSheetsConfig, setGoogleSheetsConfig] = useState({
-    webhookUrl: "",
-    syncMode: "automatic" as SyncMode,
-    lastSync: "",
-  });
+  webhookUrl: DEFAULT_WEBHOOK_URL,
+  syncMode: "automatic" as SyncMode,
+  lastSync: "",
+});
 
   const [transactionForm, setTransactionForm] = useState({
     date: todayISO(),
@@ -149,20 +149,13 @@ export default function App() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // CARREGAR LOCAL STORAGE
-  useEffect(() => {
-    const savedData = localStorage.getItem("fluxo-inteligente-prado-data");
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        setCategories(parsed.categories || []);
-        setClients(parsed.clients || []);
-        setTransactions(parsed.transactions || []);
-      } catch {
-        // ignore
-      }
-    }
-  }, []);
+
+  // CARREGAR DADOS DA PLANILHA AUTOMATICAMENTE AO ABRIR O APP
+useEffect(() => {
+  if (!googleSheetsConfig.webhookUrl) return;
+
+ loadDataFromGoogleSheets(true);
+}, [googleSheetsConfig.webhookUrl]);
 
   // SALVAR LOCAL STORAGE
   useEffect(() => {
@@ -176,18 +169,42 @@ export default function App() {
     );
   }, [categories, clients, transactions]);
 
-  // CONFIG GOOGLE SHEETS
-  useEffect(() => {
-    const savedConfig = localStorage.getItem("fluxo-inteligente-prado-config");
-    if (savedConfig) {
-      try {
-        const parsed = JSON.parse(savedConfig);
-        setGoogleSheetsConfig((prev) => ({ ...prev, ...parsed }));
-      } catch {
-        // ignore
-      }
+// CONFIG GOOGLE SHEETS
+useEffect(() => {
+  const savedConfig = localStorage.getItem("fluxo-inteligente-prado-config");
+
+  if (savedConfig) {
+    try {
+      const parsed = JSON.parse(savedConfig);
+      setGoogleSheetsConfig((prev) => ({
+        ...prev,
+        ...parsed,
+        webhookUrl: parsed.webhookUrl || DEFAULT_WEBHOOK_URL,
+      }));
+    } catch {
+      setGoogleSheetsConfig((prev) => ({
+        ...prev,
+        webhookUrl: DEFAULT_WEBHOOK_URL,
+      }));
     }
-  }, []);
+  } else {
+    setGoogleSheetsConfig((prev) => ({
+      ...prev,
+      webhookUrl: DEFAULT_WEBHOOK_URL,
+    }));
+  }
+}, []);
+
+// CARREGAR DADOS DA PLANILHA AO ABRIR
+useEffect(() => {
+  const timer = setTimeout(() => {
+    if (googleSheetsConfig.webhookUrl) {
+      loadDataFromGoogleSheets(true);
+    }
+  }, 500);
+
+  return () => clearTimeout(timer);
+}, [googleSheetsConfig.webhookUrl]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -344,7 +361,7 @@ async function loadDataFromGoogleSheets(showMessage = false) {
 
     const response = await fetch(googleSheetsConfig.webhookUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ action: "list" }),
     });
 
@@ -399,7 +416,7 @@ async function loadDataFromGoogleSheets(showMessage = false) {
 
       const response = await fetch(googleSheetsConfig.webhookUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+       headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify({ action: "import" }),
       });
 
