@@ -49,6 +49,8 @@ type Transaction = {
   date: string;
   month: string;
   business: Business;
+  bankAccount: string;
+  holder: string;
   type: EntryType;
   category: string;
   clientProject: string;
@@ -59,6 +61,22 @@ type Transaction = {
 };
 
 const businesses: Business[] = ["Marcenaria", "Construção", "Geral"];
+const bankAccounts = [
+  "Sicoob PJ Construtora",
+  "Sicoob PJ Marcenaria",
+  "Sicoob PF Marcelo",
+  "Santander PF Marcelo",
+  "Santander PF Marcelinho",
+  "Santander PF Raquel",
+  "Nubank PF Marcelo",
+  "Nubank PF Raquel",
+  "Nubank PJ Marcenaria",
+  "Nubank PJ Construtora",
+  "Caixa PJ Marcenaria",
+  "Caixa PF Raquel",
+];
+
+const holders = ["Marcelo", "Marcelinho", "Raquel", "Empresa"];
 
 const initialCategories: Category[] = [];
 const initialClients: ClientProject[] = [];
@@ -123,6 +141,8 @@ const [, setIsMobile] = useState(window.innerWidth <= 900);
   const [transactionForm, setTransactionForm] = useState({
     date: todayISO(),
     business: "Marcenaria" as Business,
+    bankAccount: "",
+    holder: "",
     type: "Entrada" as EntryType,
     value: "",
     category: "",
@@ -295,6 +315,8 @@ useEffect(() => {
     setTransactionForm({
       date: todayISO(),
       business: "Marcenaria",
+      bankAccount: "",
+      holder: "",
       type: "Entrada",
       value: "",
       category: "",
@@ -318,6 +340,8 @@ useEffect(() => {
         transaction_id: `manual-${transaction.id}`,
         data: String(transaction.date || todayISO()),
         empresa: String(transaction.business || "Marcenaria"),
+        banco_conta: String(transaction.bankAccount || ""),
+        titular: String(transaction.holder || ""),
         tipo: String(transaction.type || "Entrada"),
         categoria: String(transaction.category || ""),
         projeto_cliente: String(transaction.clientProject || ""),
@@ -468,6 +492,8 @@ async function loadDataFromGoogleSheets(showMessage = false) {
       date: transactionForm.date,
       month: toMonthYear(transactionForm.date),
       business: transactionForm.business,
+      bankAccount: transactionForm.bankAccount,
+      holder: transactionForm.holder,
       type: transactionForm.type,
       category: transactionForm.category,
       clientProject: transactionForm.clientProject,
@@ -1021,6 +1047,36 @@ async function loadDataFromGoogleSheets(showMessage = false) {
                 {businesses.map((business) => (
                   <option key={business} value={business}>
                     {business}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Banco / Conta">
+              <select
+                style={styles.select}
+                value={transactionForm.bankAccount}
+                onChange={(e) => setTransactionForm((p) => ({ ...p, bankAccount: e.target.value }))}
+              >
+                <option value="">Selecione...</option>
+                {bankAccounts.map((account) => (
+                  <option key={account} value={account}>
+                    {account}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <Field label="Titular">
+              <select
+                style={styles.select}
+                value={transactionForm.holder}
+                onChange={(e) => setTransactionForm((p) => ({ ...p, holder: e.target.value }))}
+              >
+                <option value="">Selecione...</option>
+                {holders.map((holder) => (
+                  <option key={holder} value={holder}>
+                    {holder}
                   </option>
                 ))}
               </select>
