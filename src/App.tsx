@@ -234,53 +234,63 @@ useEffect(() => {
     );
   }, [googleSheetsConfig]);
 
-  const summary = useMemo(() => {
-    const calculate = (scope: string) => {
-      const base =
-        scope === "Todas"
-          ? transactions
-          : transactions.filter((t) => t.business === scope);
+const dashboardScopes = [
+  "Marcenaria",
+  "Construção",
+  "Marcelo",
+  "Raquel",
+  "Marcelinho",
+];
 
-      const entradas = base
-        .filter((t) => t.value > 0)
-        .reduce((acc, t) => acc + t.value, 0);
+const summary = useMemo(() => {
+  const calculate = (scope: string) => {
+    const base = transactions.filter(
+      (t) => t.business === scope || t.holder === scope
+    );
 
-      const saidas = Math.abs(
-        base.filter((t) => t.value < 0).reduce((acc, t) => acc + t.value, 0)
-      );
+    const entradas = base
+      .filter((t) => t.value > 0)
+      .reduce((acc, t) => acc + t.value, 0);
 
-      return {
-        entradas,
-        saidas,
-        saldo: entradas - saidas,
-      };
-    };
+    const saidas = Math.abs(
+      base.filter((t) => t.value < 0).reduce((acc, t) => acc + t.value, 0)
+    );
 
     return {
-      geral: calculate("Todas"),
-      marcenaria: calculate("Marcenaria"),
-      construcao: calculate("Construção"),
-      operacional: calculate("Geral"),
+      entradas,
+      saidas,
+      saldo: entradas - saidas,
     };
-  }, [transactions]);
+  };
 
-  const filteredCategories = categories.filter(
-    (c) =>
-      c.active &&
-      (c.type === "Ambos" || c.type === transactionForm.type) &&
-      (c.scope === "Geral" || c.scope === transactionForm.business)
-  );
+  return {
+    marcenaria: calculate("Marcenaria"),
+    construcao: calculate("Construção"),
+    marcelo: calculate("Marcelo"),
+    raquel: calculate("Raquel"),
+    marcelinho: calculate("Marcelinho"),
+  };
+}, [transactions]);
 
-  const visibleTransactions =
-    transactionFilter === "Todas"
-      ? transactions
-      : transactions.filter((t) => t.business === transactionFilter);
+ const dashboardBase =
+  dashboardFilter === "Todas"
+    ? transactions
+    : transactions.filter(
+        (t) => t.business === dashboardFilter || t.holder === dashboardFilter
+      );
+const visibleTransactions =
+  transactionFilter === "Todas"
+    ? transactions
+    : transactions.filter(
+        (t) => t.business === transactionFilter || t.holder === transactionFilter
+      );
 
-  const dashboardBase =
-    dashboardFilter === "Todas"
-      ? transactions
-      : transactions.filter((t) => t.business === dashboardFilter);
-
+const filteredCategories = categories.filter(
+  (c) =>
+    c.active &&
+    (c.type === "Ambos" || c.type === transactionForm.type) &&
+    (c.scope === "Geral" || c.scope === transactionForm.business)
+);
   const monthlyChartData = useMemo(() => {
     const grouped = dashboardBase.reduce<Record<string, { month: string; entradas: number; saidas: number }>>(
       (acc, item) => {
@@ -642,9 +652,9 @@ async function loadDataFromGoogleSheets(showMessage = false) {
                   style={styles.select}
                 >
                   <option value="Todas">Todas as empresas</option>
-                  {businesses.map((business) => (
-                    <option key={business} value={business}>
-                      {business}
+                 {dashboardScopes.map((scope) => (
+                    <option key={scope} value={scope}>
+                      {scope}
                     </option>
                   ))}
                 </select>
@@ -657,24 +667,26 @@ async function loadDataFromGoogleSheets(showMessage = false) {
             </div>
 
             <div style={styles.grid3}>
-              <MetricCard title="Entradas gerais" value={formatCurrency(summary.geral.entradas)} tone="green" />
-              <MetricCard title="Saídas gerais" value={formatCurrency(summary.geral.saidas)} tone="red" />
-              <MetricCard title="Saldo geral" value={formatCurrency(summary.geral.saldo)} tone="blue" />
-            </div>
+              
+  <MetricCard title="Saldo Marcenaria" value={formatCurrency(summary.marcenaria.saldo)} tone="amber" />
+  <MetricCard title="Entradas Marcenaria" value={formatCurrency(summary.marcenaria.entradas)} tone="green" />
+  <MetricCard title="Saídas Marcenaria" value={formatCurrency(summary.marcenaria.saidas)} tone="red" />
 
-            <div style={styles.grid3}>
-              <MetricCard title="Saldo Marcenaria" value={formatCurrency(summary.marcenaria.saldo)} tone="amber" />
-              <MetricCard title="Saldo Construção" value={formatCurrency(summary.construcao.saldo)} tone="purple" />
-              <MetricCard title="Saldo Geral" value={formatCurrency(summary.operacional.saldo)} tone="cyan" />
-            </div>
+  <MetricCard title="Saldo Construção" value={formatCurrency(summary.construcao.saldo)} tone="purple" />
+  <MetricCard title="Entradas Construção" value={formatCurrency(summary.construcao.entradas)} tone="green" />
+  <MetricCard title="Saídas Construção" value={formatCurrency(summary.construcao.saidas)} tone="red" />
 
-            <div style={styles.grid6}>
-              <MiniMetricCard title="Entradas Marc." value={formatCurrency(summary.marcenaria.entradas)} positive />
-              <MiniMetricCard title="Saídas Marc." value={formatCurrency(summary.marcenaria.saidas)} />
-              <MiniMetricCard title="Entradas Const." value={formatCurrency(summary.construcao.entradas)} positive />
-              <MiniMetricCard title="Saídas Const." value={formatCurrency(summary.construcao.saidas)} />
-              <MiniMetricCard title="Entradas Geral" value={formatCurrency(summary.operacional.entradas)} positive />
-              <MiniMetricCard title="Saídas Geral" value={formatCurrency(summary.operacional.saidas)} />
+  <MetricCard title="Saldo Marcelo" value={formatCurrency(summary.marcelo.saldo)} tone="blue" />
+  <MetricCard title="Entradas Marcelo" value={formatCurrency(summary.marcelo.entradas)} tone="green" />
+  <MetricCard title="Saídas Marcelo" value={formatCurrency(summary.marcelo.saidas)} tone="red" />
+
+  <MetricCard title="Saldo Raquel" value={formatCurrency(summary.raquel.saldo)} tone="cyan" />
+  <MetricCard title="Entradas Raquel" value={formatCurrency(summary.raquel.entradas)} tone="green" />
+  <MetricCard title="Saídas Raquel" value={formatCurrency(summary.raquel.saidas)} tone="red" />
+
+  <MetricCard title="Saldo Marcelinho" value={formatCurrency(summary.marcelinho.saldo)} tone="blue" />
+  <MetricCard title="Entradas Marcelinho" value={formatCurrency(summary.marcelinho.entradas)} tone="green" />
+  <MetricCard title="Saídas Marcelinho" value={formatCurrency(summary.marcelinho.saidas)} tone="red" />
             </div>
 
             <div style={styles.grid2}>
@@ -797,8 +809,8 @@ async function loadDataFromGoogleSheets(showMessage = false) {
               </div>
             </div>
           </div>
-        )}
 
+        )}
         {page === "transactions" && (
           <div style={styles.pageWrap}>
             <div style={styles.headerRow}>
