@@ -1389,41 +1389,6 @@ function MetricCard({
   );
 }
 
-function MiniMetricCard({
-  title,
-  value,
-  positive,
-}: {
-  title: string;
-  value: string;
-  positive?: boolean;
-}) {
-  return (
-    <div
-      style={{
-        ...styles.miniMetricCard,
-        border: positive ? "1px solid rgba(16,185,129,.18)" : "1px solid rgba(244,114,182,.16)",
-        background: positive
-          ? "linear-gradient(180deg, rgba(16,185,129,.08), rgba(16,185,129,.03))"
-          : "linear-gradient(180deg, rgba(244,114,182,.07), rgba(244,114,182,.03))",
-      }}
-    >
-      <div style={{ fontSize: 13, color: "#a7b4c7", lineHeight: 1.35 }}>{title}</div>
-      <div
-        style={{
-          marginTop: 10,
-          fontSize: 22,
-          fontWeight: 800,
-          color: positive ? "#86efac" : "#fda4af",
-          lineHeight: 1.2,
-        }}
-      >
-        {value}
-      </div>
-    </div>
-  );
-}
-
 function SimpleListPage({
   title,
   subtitle,
