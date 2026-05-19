@@ -710,13 +710,13 @@ async function loadDataFromGoogleSheets(showMessage = false) {
                     Fluxo mensal
                   </h3>
                 </div>
-                <div style={{ height: 320 }}>
+                <div style={{ height: 420 }}>
                   {monthlyChartData.length === 0 ? (
                     <div style={styles.emptyCenter}>
                       Ainda não há lançamentos para exibir no gráfico mensal.
                     </div>
                   ) : (
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={320}>
                       <BarChart data={monthlyChartData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#273248" />
                         <XAxis dataKey="month" stroke="#94a3b8" />
@@ -741,13 +741,13 @@ async function loadDataFromGoogleSheets(showMessage = false) {
                 <div style={styles.cardHeader}>
                   <h3 style={styles.cardTitle}>Despesas por categoria</h3>
                 </div>
-                <div style={{ height: 320 }}>
+                <div style={{ height: 420 }}>
                   {categoryChartData.length === 0 ? (
                     <div style={styles.emptyCenter}>
                       Sem despesas para exibir no filtro atual.
                     </div>
                   ) : (
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={400}>
                       <PieChart>
                         <Pie
                           data={categoryChartData}
@@ -1878,11 +1878,11 @@ const styles: Record<string, React.CSSProperties> = {
   },
   grid2: {
   display: "grid",
-  gap: 18,
+  gap: 24,
   gridTemplateColumns:
-  window.innerWidth <= 900
+    window.innerWidth <= 900
       ? "1fr"
-  : "repeat(3, minmax(0, 1fr))",
+      : "repeat(2, minmax(320px, 1fr))",
 },
  grid3: {
   display: "grid",
