@@ -78,7 +78,17 @@ const bankAccounts = [
 
 const holders = ["Marcelo", "Marcelinho", "Raquel", "Empresa"];
 
-const initialCategories: Category[] = [];
+const initialCategories: Category[] = [
+  { id: "cat-ipva", name: "IPVA", type: "Saída", scope: "Geral", active: true },
+  { id: "cat-almoco", name: "Almoço", type: "Saída", scope: "Geral", active: true },
+  { id: "cat-despesa-pessoal", name: "Despesa pessoal", type: "Saída", scope: "Geral", active: true },
+  { id: "cat-mercado", name: "Mercado", type: "Saída", scope: "Geral", active: true },
+  { id: "cat-combustivel", name: "Combustível", type: "Saída", scope: "Geral", active: true },
+  { id: "cat-manutencao", name: "Manutenção", type: "Saída", scope: "Geral", active: true },
+  { id: "cat-impostos", name: "Impostos", type: "Saída", scope: "Geral", active: true },
+  { id: "cat-tarifas-bancarias", name: "Tarifas bancárias", type: "Saída", scope: "Geral", active: true },
+  { id: "cat-outros", name: "Outros", type: "Ambos", scope: "Geral", active: true },
+];
 const initialClients: ClientProject[] = [];
 const initialTransactions: Transaction[] = [];
 const DEFAULT_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyM7ivSuztGFBBNE4bwH6dvlP4alyBfB3F0loLCPC6TJtLPmPIoIBePPKSLYdEROPJL/exec"
@@ -121,7 +131,7 @@ export default function App() {
   const [clients, setClients] = useState<ClientProject[]>(initialClients);
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
 
-const [, setIsMobile] = useState(window.innerWidth <= 900);
+
   const [message, setMessage] = useState("");
   const [syncing, setSyncing] = useState(false);
 
@@ -137,6 +147,7 @@ const [, setIsMobile] = useState(window.innerWidth <= 900);
   syncMode: "automatic" as SyncMode,
   lastSync: "",
 });
+
 
   const [transactionForm, setTransactionForm] = useState({
     date: todayISO(),
@@ -164,11 +175,7 @@ const [, setIsMobile] = useState(window.innerWidth <= 900);
   });
 
   // RESPONSIVIDADE
-  useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth <= 900);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, []);
+  
 
 
   // CARREGAR DADOS DA PLANILHA AUTOMATICAMENTE AO ABRIR O APP
@@ -417,7 +424,13 @@ async function loadDataFromGoogleSheets(showMessage = false) {
       : [];
 
     setTransactions(remoteTransactions);
-    setCategories(remoteCategories);
+    setCategories([
+  ...initialCategories,
+  ...remoteCategories.filter(
+    (cat: Category) =>
+      !initialCategories.some((fixed) => fixed.name === cat.name)
+  ),
+]);
     setClients(remoteClients);
 
     setGoogleSheetsConfig((prev) => ({
@@ -1503,12 +1516,11 @@ const styles: Record<string, React.CSSProperties> = {
       'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   },
   sidebar: {
-    borderRight: "1px solid rgba(255,255,255,.06)",
-    background: "linear-gradient(180deg, rgba(8,15,27,.95), rgba(7,12,22,.98))",
-    padding: 24,
-    display: "flex",
-    flexDirection: "column",
-  },
+  borderRight: "1px solid rgba(255,255,255,.06)",
+  background: "linear-gradient(180deg, rgba(8,15,27,.95), rgba(7,12,22,.98))",
+  padding: window.innerWidth <= 900 ? 12 : 24,
+width: window.innerWidth <= 900 ? "100%" : 260,
+},
   brandBox: {
     display: "flex",
     gap: 14,
@@ -1588,9 +1600,8 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: "0 10px 24px rgba(0,0,0,.18)",
   },
   main: {
-    padding: 28,
-    color: "#f8fafc",
-  },
+  padding: window.innerWidth <= 900 ? 16 : 28,
+},
   alert: {
     marginBottom: 18,
     border: "1px solid rgba(16,185,129,.25)",
@@ -1601,9 +1612,9 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: "0 12px 24px rgba(0,0,0,.15)",
   },
   pageWrap: {
-    display: "grid",
-    gap: 20,
-  },
+  display: "grid",
+ gap: window.innerWidth <= 900 ? 12 : 20,
+},
   headerRow: {
     display: "flex",
     justifyContent: "space-between",
@@ -1856,15 +1867,21 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: "center",
   },
   grid2: {
-    display: "grid",
-    gap: 18,
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-  },
-  grid3: {
-    display: "grid",
-    gap: 18,
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-  },
+  display: "grid",
+  gap: 18,
+  gridTemplateColumns:
+  window.innerWidth <= 900
+    ? "1fr"
+    : "repeat(2, minmax(0, 1fr))",
+},
+ grid3: {
+  display: "grid",
+  gap: 18,
+ gridTemplateColumns:
+  window.innerWidth <= 900
+    ? "1fr"
+    : "repeat(3, minmax(0, 1fr))",
+},
   grid6: {
     display: "grid",
     gap: 18,
