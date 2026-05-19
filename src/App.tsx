@@ -1508,7 +1508,7 @@ const styles: Record<string, React.CSSProperties> = {
  app: {
   minHeight: "100vh",
   background:
-    "radial-gradient(circle at top left, rgba(59,130,246,.10), transparent 30%)",
+  "radial-gradient(circle at top left, rgba(59,130,246,.10), transparent 30%), radial-gradient(circle at bottom right, rgba(16,185,129,.08), transparent 30%), #050816",
   color: "#bfafcc",
   display: "grid",
   gridTemplateColumns:
@@ -1802,14 +1802,16 @@ const styles: Record<string, React.CSSProperties> = {
     zIndex: 999,
   },
   modal: {
-    width: "min(940px, 100%)",
-    background: "linear-gradient(180deg, #091321, #07111d)",
-    border: "1px solid rgba(255,255,255,.08)",
-    borderRadius: 28,
-    padding: 24,
-    boxSizing: "border-box",
-    boxShadow: "0 30px 80px rgba(0,0,0,.40)",
-  },
+  width: "min(940px, 100%)",
+  background: "linear-gradient(180deg, #091321, #07111d)",
+  border: "1px solid rgba(255,255,255,.08)",
+  borderRadius: 28,
+  padding: window.innerWidth <= 900 ? 16 : 24,
+  boxSizing: "border-box",
+  boxShadow: "0 30px 80px rgba(0,0,0,.40)",
+  maxHeight: "90vh",
+  overflowY: "auto",
+},
   modalHeader: {
     display: "flex",
     justifyContent: "space-between",
