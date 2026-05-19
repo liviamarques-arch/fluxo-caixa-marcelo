@@ -1505,21 +1505,26 @@ function CellBlock({ label, value }: { label: string; value: string }) {
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  app: {
-    minHeight: "100vh",
-    background:
-      "radial-gradient(circle at top left, rgba(59,130,246,.10), transparent 30%), radial-gradient(circle at top right, rgba(16,185,129,.08), transparent 25%), #071018",
-    color: "#f8fafc",
-    display: "grid",
-    gridTemplateColumns: "290px 1fr",
+ app: {
+  minHeight: "100vh",
+  background:
+    "radial-gradient(circle at top left, rgba(59,130,246,.10), transparent 30%)",
+  color: "#bfafcc",
+  display: "grid",
+  gridTemplateColumns:
+    window.innerWidth <= 900
+      ? "1fr"
+      : "290px 1fr",
     fontFamily:
       'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   },
-  sidebar: {
+ sidebar: {
   borderRight: "1px solid rgba(255,255,255,.06)",
   background: "linear-gradient(180deg, rgba(8,15,27,.95), rgba(7,12,22,.98))",
   padding: window.innerWidth <= 900 ? 12 : 24,
-width: window.innerWidth <= 900 ? "100%" : 260,
+  width: window.innerWidth <= 900 ? "100%" : 280,
+  maxWidth: window.innerWidth <= 900 ? "100%" : 280,
+  boxSizing: "border-box",
 },
   brandBox: {
     display: "flex",
@@ -1600,7 +1605,7 @@ width: window.innerWidth <= 900 ? "100%" : 260,
     boxShadow: "0 10px 24px rgba(0,0,0,.18)",
   },
   main: {
-  padding: window.innerWidth <= 900 ? 16 : 28,
+  padding: window.innerWidth <= 900 ? 14 : 28,
 },
   alert: {
     marginBottom: 18,
